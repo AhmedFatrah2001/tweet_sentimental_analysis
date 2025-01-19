@@ -29,25 +29,16 @@ def prepare_features(text):
 
 # Function to predict sentiment
 def predict_sentiment(text):
-    # Prepare features
-    features, sentiment_scores = prepare_features(text)
-    
-    # SVM Prediction
-    sentiment = svm.predict(features)
-    sentiment_mapping = {1: ('Positive', '😊'), 0: ('Neutral', '😐'), -1: ('Negative', '😠')}
-    
-    # Override model prediction based on dominant sentiment score
-    dominant_sentiment = max(enumerate(sentiment_scores), key=lambda x: x[1])  # Find index of highest score
-    if dominant_sentiment[1] > 0.5:  # If the dominant score is significantly high
-        if dominant_sentiment[0] == 0:  # Negative
-            return sentiment_mapping[-1], sentiment_scores
-        elif dominant_sentiment[0] == 1:  # Neutral
-            return sentiment_mapping[0], sentiment_scores
-        elif dominant_sentiment[0] == 2:  # Positive
-            return sentiment_mapping[1], sentiment_scores
+    # Prepare features and extract sentiment scores
+    _, sentiment_scores = prepare_features(text)
 
-    # Default to the SVM prediction
-    return sentiment_mapping[sentiment[0]], sentiment_scores
+    # Find the sentiment with the highest score
+    sentiment_mapping = {0: ('Negative', '😠'), 1: ('Neutral', '😐'), 2: ('Positive', '😊')}
+    max_score_index = sentiment_scores.argmax()  # Get the index of the highest score
+
+    # Return the sentiment corresponding to the highest score
+    return sentiment_mapping[max_score_index], sentiment_scores
+
 
 
 
